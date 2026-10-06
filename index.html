@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Selamat Ulang Tahun Neo Stiv</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&family=Caveat:wght@500;600&display=swap">
+<style>
+:root{
+  --bulu-terang:#CCA98B; --bulu-utama:#C9A687;
+  --ink:#3B2A1D; --wajah:#EBDAC4; --pipi:#E3A58F; --topi:#6F7D5E;
+  --bg:#FFFFFF; --hint:#6B5646;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+html{color-scheme:light}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);display:grid;place-items:center;font-family:'Caveat',cursive}
+main{display:flex;flex-direction:column;align-items:center;gap:1.4rem;padding:2rem 1rem}
+
+.scene{perspective:1400px}
+.card{position:relative;width:min(86vw,340px);aspect-ratio:3/4;filter:drop-shadow(0 12px 16px rgba(59,42,29,.22))}
+
+/* halaman dalam */
+.inside{position:absolute;inset:0;background:var(--bulu-terang);border-radius:6px 14px 14px 6px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:1.4rem 1.4rem 1rem;gap:.7rem}
+.inside h1{font-family:'Fraunces',Georgia,serif;font-style:italic;font-weight:600;font-size:1.9rem;line-height:1.15;margin:0}
+.inside .untuk{font-size:1.5rem;margin:0}
+.inside .pesan{font-size:1.4rem;line-height:1.25;margin:0}
+.inside .dari{font-size:1.6rem;font-weight:600;margin:.2rem 0 0}
+.inside svg{width:84px;height:auto;flex:none}
+[contenteditable]{outline:none;border-radius:4px;cursor:text}
+[contenteditable]:focus-visible{outline:2px dashed var(--ink);outline-offset:3px}
+
+/* sampul */
+.cover{position:absolute;inset:0;transform-origin:left center;transform-style:preserve-3d;
+  transition:transform 1.2s cubic-bezier(.5,.05,.2,1);border:0;padding:0;background:none;cursor:pointer;font:inherit;color:inherit}
+.card.open .cover{transform:rotateY(-172deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:6px 14px 14px 6px;overflow:hidden}
+.front{background:var(--bulu-utama);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:2.2rem 1.4rem 1.6rem}
+.front::before{content:"";position:absolute;inset:0;opacity:.55;
+  background:conic-gradient(from -45deg at bottom,#0000,var(--bulu-terang) 1deg 90deg,#0000 91deg) 0 0/26px 13px}
+.front>*{position:relative}
+.front .judul{font-family:'Fraunces',Georgia,serif;font-style:italic;font-weight:600;font-size:2.1rem;line-height:1.1;text-align:center;margin:0}
+.front svg{width:86%;height:auto}
+.back{background:var(--bulu-terang);transform:rotateY(180deg);box-shadow:inset -10px 0 14px rgba(59,42,29,.12)}
+.cover:focus-visible .front{outline:3px solid var(--ink);outline-offset:-6px}
+
+.hint{margin:0;color:var(--hint);font-size:1.4rem}
+
+/* landak bergoyang pelan saat kartu masih tertutup: satu momen saja */
+.cover .hh{transform-origin:50% 90%;animation:goyang 2.6s ease-in-out 1.2s 2}
+.card.open .hh{animation:none}
+@keyframes goyang{0%,100%{transform:rotate(0)}30%{transform:rotate(-2.5deg)}60%{transform:rotate(2deg)}}
+@media (prefers-reduced-motion:reduce){.cover{transition-duration:.01s}.cover .hh{animation:none}}
+
+
+main[hidden]{display:none}
+
+/* gerbang pertanyaan */
+.gerbang{position:fixed;inset:0;z-index:10;background:#fff;display:grid;place-items:center;overflow:hidden;
+  padding:max(1rem,env(safe-area-inset-top)) 1rem max(1rem,env(safe-area-inset-bottom));transition:opacity .6s}
+.gerbang.pergi{opacity:0;pointer-events:none}
+.gerbang[hidden]{display:none}
+.kotak{display:flex;flex-direction:column;align-items:center;gap:1rem;text-align:center;width:100%;max-width:26rem}
+.kotak[hidden]{display:none}
+.kotak .mini{width:84px;height:auto}
+.kotak p{margin:0;font-family:'Fraunces',Georgia,serif;font-style:italic;font-weight:600;font-size:1.5rem;line-height:1.25}
+.pilihan{display:flex;flex-wrap:wrap;gap:.7rem;justify-content:center;min-height:3.4rem}
+.btn{font:600 1.45rem/1 'Caveat',cursive;color:var(--ink);background:var(--bulu-utama);border:2px solid var(--ink);
+  border-radius:12px;padding:.55rem 1.1rem;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
+.btn.lain{background:var(--bulu-terang)}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.btn:focus-visible{outline:3px solid var(--bulu-terang);outline-offset:3px}
+.btn.jatuh{pointer-events:none;animation:jatuh .9s cubic-bezier(.5,0,1,.6) forwards}
+@keyframes jatuh{0%{transform:rotate(0)}15%{transform:rotate(-8deg) translateY(-6px)}100%{transform:translateY(120vh) rotate(35deg)}}
+.btn.acak{position:absolute;animation:muncul .18s ease-out}
+@keyframes muncul{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes pudar{to{opacity:0}}
+@media (prefers-reduced-motion:reduce){.btn.jatuh{animation:pudar .3s forwards}.btn.acak{animation:none}.gerbang{transition-duration:.01s}}
+.pilihan[hidden],.terima[hidden]{display:none}
+.pilihan.tiga{flex-direction:column;align-items:stretch;min-height:0;width:100%}
+.pilihan.tiga .btn{width:100%;line-height:1.15}
+.kotak .terima{font-size:2.6rem;animation:loncat .6s cubic-bezier(.3,1.6,.5,1)}
+@keyframes loncat{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){.kotak .terima{animation:none}}
+.btn.mati{position:absolute;margin:0;z-index:5;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.btn.mati.diangkat{cursor:grabbing;box-shadow:0 12px 16px rgba(59,42,29,.3)}
+</style>
+</head>
+<body>
+  <!-- Landak dipakai ulang di sampul dan halaman dalam -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="landak" viewBox="0 0 250 190">
+      <g id="duri-belakang" fill="#CCA98B" stroke="#3B2A1D" stroke-width="2" stroke-linejoin="round"></g>
+      <g id="duri-depan" fill="#C9A687" stroke="#3B2A1D" stroke-width="2" stroke-linejoin="round"></g>
+      <ellipse cx="108" cy="132" rx="74" ry="46" fill="#C9A687" stroke="#3B2A1D" stroke-width="2"/>
+      <ellipse cx="84" cy="178" rx="15" ry="7" fill="#EBDAC4" stroke="#3B2A1D" stroke-width="2"/>
+      <ellipse cx="150" cy="178" rx="15" ry="7" fill="#EBDAC4" stroke="#3B2A1D" stroke-width="2"/>
+      <ellipse cx="176" cy="112" rx="9" ry="11" fill="#C9A687" stroke="#3B2A1D" stroke-width="2"/>
+      <path d="M160 150 Q160 112 192 112 Q218 114 238 140 Q240 150 236 152 Q200 164 172 160 Q160 158 160 150Z" fill="#EBDAC4" stroke="#3B2A1D" stroke-width="2" stroke-linejoin="round"/>
+      <circle cx="238" cy="141" r="6" fill="#3B2A1D"/>
+      <circle cx="200" cy="132" r="3.6" fill="#3B2A1D"/>
+      <ellipse cx="193" cy="146" rx="7" ry="4.5" fill="#E3A58F" opacity=".85"/>
+      <path d="M208 150 Q220 156 230 150" fill="none" stroke="#3B2A1D" stroke-width="2" stroke-linecap="round"/>
+      <path d="M170 112 L190 108 L178 76Z" fill="#6F7D5E" stroke="#3B2A1D" stroke-width="2" stroke-linejoin="round"/>
+      <circle cx="178" cy="74" r="5" fill="#E3A58F" stroke="#3B2A1D" stroke-width="2"/>
+    </symbol>
+  </svg>
+
+  <!-- ===== GERBANG PERTANYAAN sebelum kartu ===== -->
+  <div class="gerbang" id="gerbang" role="dialog" aria-modal="true" aria-labelledby="tanya">
+    <div class="kotak" id="langkah1">
+      <svg class="mini" viewBox="0 0 250 190" aria-hidden="true"><use href="#landak"/></svg>
+      <p id="tanya">Anda mendapatkan pesan dari kuroneko, apakah anda ingin membukanya?</p>
+      <div class="pilihan">
+        <button class="btn" id="mau" type="button">Please bang, buka aku mau liat</button>
+        <button class="btn lain" id="tidak" type="button">Ngak tertarik</button>
+      </div>
+    </div>
+    <div class="kotak" id="langkah2" hidden>
+      <svg class="mini" viewBox="0 0 250 190" aria-hidden="true"><use href="#landak"/></svg>
+      <p id="tanya2">Apabila Anda ingin melanjutkan proses ini, Anda diwajibkan untuk memasukkan Kuroneko ke dalam giveaway Anda. Apakah Anda bersedia memenuhi ketentuan tersebut?</p>
+      <div class="pilihan tiga" id="pilihan2">
+        <button class="btn" id="iya" type="button">Iya</button>
+        <button class="btn lain" id="ngak" type="button">Ngak lah salah sendiri sering rage baiting</button>
+        <button class="btn" id="menang" type="button">Langsung aku menangin ini mah</button>
+      </div>
+      <p class="terima" id="terima" role="status" hidden>Makasih koh Stiv</p>
+    </div>
+  </div>
+
+<main hidden>
+
+  <div class="scene">
+    <div class="card" id="kartu">
+
+      <!-- ===== HALAMAN DALAM ===== -->
+      <section class="inside">
+        <p class="pesan">Selamat ulang tahun, Neo Stiv! Semoga sehat selalu, panjang umur, makin kaya, dan semoga nggak skip story game lagi. DIBACA STORY-NYA! Dan jangan TURUNIN DIFFICULTY lagi yah! Yaudah, gitu tok. Wes, nggak ada lagi. Ditunggu yah, Steam Wallet nyaaa!</p>
+        <p class="dari">Dari: kuroneko</p>
+        <svg viewBox="0 0 250 190" role="img" aria-label="Landak kecil memakai topi pesta"><use href="#landak"/></svg>
+      </section>
+
+      <!-- ===== SAMPUL DEPAN ===== -->
+      <button class="cover" id="sampul" type="button" aria-expanded="false" aria-controls="kartu" aria-label="Buka kartu">
+        <span class="face front">
+          <span class="judul">Selamat Ulang Tahun Neo Stiv</span>
+          <svg class="hh" viewBox="0 0 250 190" aria-hidden="true"><use href="#landak"/></svg>
+        </span>
+        <span class="face back"></span>
+      </button>
+
+    </div>
+  </div>
+
+  <p class="hint" id="petunjuk">Ketuk kartu untuk membuka</p>
+
+</main>
+
+<script>
+// Duri landak dibuat dari dua lapis segitiga yang melengkung di punggung
+(function(){
+  function duri(cx, cy, rx, ry, n, tinggi, a0, a1){
+    var d = "M" + cx + " " + cy;
+    function pt(a, k){ var r = a * Math.PI / 180; return [cx + rx*k*Math.cos(r), cy - ry*k*Math.sin(r)]; }
+    var p = pt(a0, 1); d += " L" + p[0].toFixed(1) + " " + p[1].toFixed(1);
+    for (var i = 0; i < n; i++){
+      var s = a0 + (a1 - a0) * i / n, e = a0 + (a1 - a0) * (i + 1) / n;
+      var t = pt((s + e) / 2, 1 + tinggi), q = pt(e, 1);
+      d += " L" + t[0].toFixed(1) + " " + t[1].toFixed(1) + " L" + q[0].toFixed(1) + " " + q[1].toFixed(1);
+    }
+    return d + "Z";
+  }
+  function tambah(id, d){
+    var el = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    el.setAttribute("d", d);
+    document.getElementById(id).appendChild(el);
+  }
+  tambah("duri-belakang", duri(108, 132, 78, 62, 11, .3, 205, -15));
+  tambah("duri-depan",    duri(108, 132, 72, 54, 9,  .22, 195, -5));
+
+  var kartu = document.getElementById("kartu"), sampul = document.getElementById("sampul"),
+      petunjuk = document.getElementById("petunjuk");
+  sampul.addEventListener("click", function(){
+    var buka = kartu.classList.toggle("open");
+    sampul.setAttribute("aria-expanded", buka);
+    sampul.setAttribute("aria-label", buka ? "Tutup kartu" : "Buka kartu");
+    petunjuk.textContent = buka ? "" : "Ketuk kartu untuk membuka";
+  });
+})();
+</script>
+<script>
+(function(){
+  var TOTAL = 26;           // berapa kali tombol "Please" harus diklik
+  function $(id){ return document.getElementById(id); }
+  var gerbang = $("gerbang"), l1 = $("langkah1"), l2 = $("langkah2"), mau = $("mau"), tidak = $("tidak"),
+      iya = $("iya"), ngak = $("ngak"), menang = $("menang"), pilihan2 = $("pilihan2"),
+      terima = $("terima"), tanya2 = $("tanya2"), utama = document.querySelector("main"),
+      sisa = TOTAL, kurangi = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Pertanyaan 1: "Ngak tertarik" tidak berfungsi, tombolnya jatuh lalu hilang
+  tidak.addEventListener("click", function(){
+    tidak.classList.add("jatuh");
+    tidak.addEventListener("animationend", function(){ tidak.remove(); }, {once:true});
+  });
+
+  // tombol "Please" muncul di tempat acak (tetap di dalam layar)
+  function acak(){
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "btn acak"; b.textContent = "Please";
+    gerbang.appendChild(b);
+    var w = b.offsetWidth, h = b.offsetHeight, m = 16, vw = gerbang.clientWidth, vh = gerbang.clientHeight,
+        k = l1.getBoundingClientRect(), x, y, i = 0;
+    do {
+      x = m + Math.random() * Math.max(0, vw - w - 2*m);
+      y = m + Math.random() * Math.max(0, vh - h - 2*m);
+      i++;
+    } while (i < 30 && x < k.right && x + w > k.left && y < k.bottom && y + h > k.top);
+    b.style.left = x + "px"; b.style.top = y + "px";
+    b.focus({preventScroll:true});
+    b.addEventListener("click", function(){
+      b.remove(); sisa--;
+      if (sisa > 0) acak(); else { l1.hidden = true; l2.hidden = false; iya.focus(); }
+    });
+  }
+  mau.addEventListener("click", function(){ mau.remove(); acak(); });
+
+  // masuk ke kartu
+  function masuk(){
+    utama.hidden = false;
+    gerbang.classList.add("pergi");
+    setTimeout(function(){ gerbang.hidden = true; $("sampul").focus({preventScroll:true}); }, 650);
+  }
+
+  // suara "yeyyyy": nada ceria + suara bawaan perangkat
+  function sorak(){
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) {
+        var c = new AC(), t = c.currentTime;
+        [523.25, 659.25, 783.99, 1046.5].forEach(function(f, i){
+          var o = c.createOscillator(), g = c.createGain(), at = t + i * .11;
+          o.type = "triangle"; o.frequency.value = f;
+          g.gain.setValueAtTime(.0001, at);
+          g.gain.exponentialRampToValueAtTime(.25, at + .02);
+          g.gain.exponentialRampToValueAtTime(.0001, at + .35);
+          o.connect(g); g.connect(c.destination); o.start(at); o.stop(at + .4);
+        });
+      }
+    } catch (e) {}
+    setTimeout(function(){
+      try {
+        if (window.speechSynthesis) {
+          var u = new SpeechSynthesisUtterance("yeyyyy");
+          u.lang = "id-ID"; u.pitch = 1.8; u.rate = .9;
+          window.speechSynthesis.speak(u);
+        }
+      } catch (e) {}
+    }, 450);
+  }
+
+  // Pertanyaan 2
+  iya.addEventListener("click", masuk);
+
+  // Pertanyaan 2: "Ngak lah..." kabur tiap kali di-hover (bertukar tempat dengan "Langsung aku menangin ini mah")
+  var mati = false, timerTukar = 0, kunciTukar = 0,
+      fs = {x:0, y:0, vx:0, vy:0, rot:0, vr:0, drag:false, raf:0, dx:0, dy:0, lx:0, ly:0, lt:0};
+  function jepit(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
+
+  function tukar(){
+    kunciTukar = Date.now() + 400;
+    var r1 = ngak.getBoundingClientRect(), r2 = menang.getBoundingClientRect();
+    if (ngak.nextElementSibling === menang) pilihan2.insertBefore(menang, ngak); else pilihan2.insertBefore(ngak, menang);
+    if (kurangi || !ngak.animate) return;
+    var n1 = ngak.getBoundingClientRect(), n2 = menang.getBoundingClientRect();
+    ngak.animate([{transform:"translate(" + (r1.left - n1.left) + "px," + (r1.top - n1.top) + "px)"}, {transform:"none"}], {duration:280, easing:"ease-out"});
+    menang.animate([{transform:"translate(" + (r2.left - n2.left) + "px," + (r2.top - n2.top) + "px)"}, {transform:"none"}], {duration:280, easing:"ease-out"});
+  }
+  // jeda singkat sebelum kabur: kalau kursor langsung klik (fast hand), tombolnya masih kena
+  ngak.addEventListener("pointerenter", function(e){
+    if (mati || e.pointerType === "touch") return;
+    clearTimeout(timerTukar);
+    timerTukar = setTimeout(function(){ if (!mati && Date.now() >= kunciTukar) tukar(); }, 130);
+  });
+  ngak.addEventListener("pointerleave", function(){ clearTimeout(timerTukar); });
+
+  // tombol "Ngak lah..." terklik: jatuh ke bawah dan tidak berfungsi, tapi masih bisa diangkat pakai kursor
+  function gambar(){
+    ngak.style.left = fs.x + "px"; ngak.style.top = fs.y + "px";
+    ngak.style.transform = "rotate(" + fs.rot.toFixed(2) + "deg)" + (fs.drag ? " scale(1.05)" : "");
+  }
+  function jatuhkan(){
+    cancelAnimationFrame(fs.raf);
+    var w = ngak.offsetWidth, h = ngak.offsetHeight, last = performance.now();
+    if (kurangi) { fs.y = gerbang.clientHeight - h - 8; fs.vx = fs.vy = 0; fs.rot = 0; gambar(); return; }
+    function langkah(now){
+      var dt = Math.min(.032, (now - last) / 1000), lantai = gerbang.clientHeight - h - 8, kanan = gerbang.clientWidth - w - 8;
+      last = now;
+      fs.vy += 2200 * dt; fs.x += fs.vx * dt; fs.y += fs.vy * dt; fs.rot += fs.vr * dt;
+      var diLantai = false;
+      if (fs.y >= lantai) {
+        fs.y = lantai; diLantai = true;
+        fs.vy = Math.abs(fs.vy) > 160 ? fs.vy * -.35 : 0;
+        fs.vx *= Math.max(0, 1 - 6 * dt); fs.vr = 0; fs.rot += (0 - fs.rot) * Math.min(1, 12 * dt);
+      }
+      if (fs.x < 8) { fs.x = 8; fs.vx *= -.5; } else if (fs.x > kanan) { fs.x = kanan; fs.vx *= -.5; }
+      gambar();
+      if (diLantai && fs.vy === 0 && Math.abs(fs.vx) < 4 && Math.abs(fs.rot) < .3) { fs.vx = 0; fs.rot = 0; gambar(); return; }
+      fs.raf = requestAnimationFrame(langkah);
+    }
+    fs.raf = requestAnimationFrame(langkah);
+  }
+  function matikan(){
+    clearTimeout(timerTukar);
+    mati = true;
+    ngak.getAnimations().forEach(function(a){ a.cancel(); });
+    var r = ngak.getBoundingClientRect(), g = gerbang.getBoundingClientRect();
+    ngak.classList.add("mati");
+    gerbang.appendChild(ngak);
+    ngak.style.width = r.width + "px";
+    fs.x = r.left - g.left; fs.y = r.top - g.top; fs.vx = 0; fs.vy = 0; fs.rot = 0; fs.vr = (Math.random() - .5) * 120;
+    gambar(); jatuhkan();
+  }
+  ngak.addEventListener("click", function(){ if (!mati) matikan(); });
+
+  ngak.addEventListener("pointerdown", function(e){
+    if (!mati) return;
+    e.preventDefault();
+    cancelAnimationFrame(fs.raf);
+    ngak.setPointerCapture(e.pointerId);
+    var g = gerbang.getBoundingClientRect();
+    fs.drag = true; fs.vx = fs.vy = fs.vr = 0;
+    fs.dx = e.clientX - g.left - fs.x; fs.dy = e.clientY - g.top - fs.y;
+    fs.lx = e.clientX; fs.ly = e.clientY; fs.lt = performance.now();
+    ngak.classList.add("diangkat"); gambar();
+  });
+  ngak.addEventListener("pointermove", function(e){
+    if (!fs.drag) return;
+    var g = gerbang.getBoundingClientRect(), now = performance.now(), dt = Math.max(.008, (now - fs.lt) / 1000);
+    fs.x = jepit(e.clientX - g.left - fs.dx, 0, gerbang.clientWidth - ngak.offsetWidth);
+    fs.y = jepit(e.clientY - g.top - fs.dy, 0, gerbang.clientHeight - ngak.offsetHeight);
+    fs.vx = .6 * fs.vx + .4 * jepit((e.clientX - fs.lx) / dt, -1500, 1500);
+    fs.vy = .6 * fs.vy + .4 * jepit((e.clientY - fs.ly) / dt, -1500, 1500);
+    fs.lx = e.clientX; fs.ly = e.clientY; fs.lt = now;
+    gambar();
+  });
+  function lepas(){
+    if (!fs.drag) return;
+    fs.drag = false; ngak.classList.remove("diangkat");
+    if (performance.now() - fs.lt > 80) { fs.vx = 0; fs.vy = 0; }   // berhenti dulu sebelum dilepas: jatuh lurus
+    fs.vr = (Math.random() - .5) * 80;
+    jatuhkan();
+  }
+  ngak.addEventListener("pointerup", lepas);
+  ngak.addEventListener("pointercancel", lepas);
+
+  // "Langsung aku menangin ini mah": tulisan terima kasih + suara, lalu lanjut ke kartu
+  menang.addEventListener("click", function(){
+    tanya2.hidden = true; pilihan2.hidden = true; terima.hidden = false;
+    sorak();
+    setTimeout(masuk, 3500);
+  });
+})();
+</script>
+</body>
+</html>
